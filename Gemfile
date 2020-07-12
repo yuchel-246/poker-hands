@@ -61,4 +61,8 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+#Could not find a JavaScript runtimeのエラー文発生により追加
 gem 'therubyracer'
+gem 'libv8'
+
+gem 'rails-i18n', '~> 5.1' 
