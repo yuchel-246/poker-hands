@@ -18,10 +18,12 @@ class CardsController < ApplicationController
   end
 
   def result
-    @result = @card.card_suit
+    @a = @cards
   end
 
-  def error; end
+  def error
+    
+  end
 
   private
 

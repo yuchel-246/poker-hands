@@ -1,25 +1,59 @@
 # frozen_string_literal: true
 
 class Card < ApplicationRecord
-  VALID_CARD_HAND = /\A[A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?\z/.freeze
-  VALID_CARD_HAND_SECOND = /\A[SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])\z/.freeze
-  VALID_CARD_HAND_THIRD = /^(?!.*([SDHC]|[1-9]|1[0-3])).+$/.freeze
-  validate :card_error
+  VALID_FORMAT = /\A[A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?\z/.freeze
+  VALID_FORMAT_STRICT = /\A[SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])\z/.freeze
+  validate :validate
 
-  def card_error
-    @trump = hand.split(/[ ]/)
-    trump_duplicate = @trump.uniq
-    if hand.match(VALID_CARD_HAND).nil?
+  def validate
+    cards = hand.split(/[ ]/)
+    if hand.match(VALID_FORMAT).nil?
       errors.add(:hand, '5つのカード指定文字を半角スペース区切りで入力してください。（例：”S1 H3 D9 C13 S11”）')
-    elsif hand.match(VALID_CARD_HAND_SECOND).nil?
-      errors.add(:hand, where_error)
-    elsif trump_duplicate.length != 5
+    elsif hand.match(VALID_FORMAT_STRICT).nil?
+      errors.add(:hand, identify)
+    elsif cards.size != cards.uniq.size
       errors.add(:hand, 'カードが重複しています。')
     end
   end
 
-  def where_error
-    @trump.each.with_index(1) do |item, i|
+  # 役判定
+  def judge
+    @nums = hand.delete('^0-9| ').split(' ').map{|n|n.to_i}
+    @suits = hand.delete('^SDHC| ').split(' ')
+    @cards = hand.split(' ')
+    # 変換
+    count_box = []
+    (0..@nums.uniq.length - 1).each do |i|
+      count_box[i] = @nums.count(@nums.uniq[i])
+    end
+    
+    case [straight?, flash?, count_box.sort.reverse]
+    when [true, true, [1, 1, 1, 1, 1]]
+      @result = 'ストレートフラッシュ'
+    when [true, false, [1, 1, 1, 1, 1]]
+      @result = 'ストレート'
+    when [false, true, [1, 1, 1, 1, 1]]
+      @result = 'フラッシュ'
+    when [false, false, [4, 1]]
+      @result = 'フォー・オブ・ア・カインド'
+    when [false, false, [3, 2]]
+      @result = 'フルハウス'
+    when [false, false, [3, 1, 1]]
+      @result = 'スリー・オブ・ア・カインド'
+    when [false, false, [2, 2, 1]]
+      @result = 'ツーペア'
+    when [false, false, [2, 1, 1, 1]]
+      @result = 'ワンペア'
+    else
+      @result = 'ハイカード'
+    end
+  end
+
+  private
+
+  def identify
+    @cards = hand.split(' ')
+    @cards.each.with_index(1) do |item, i|
       if item.match(/[SDHC]([1-9]|1[0-3])/)
         puts ''
       else
@@ -28,49 +62,11 @@ class Card < ApplicationRecord
     end
   end
 
-  # 役判定
-  def card_suit
-    @num = hand.delete('^0-9| ').split(' ')
-    @suit = hand.delete('^SDHC| ').split(' ')
-    @trump = hand.split(' ')
-    # 変換
-    (0..4).each do |i|
-      @num[i] = @num[i].to_i
-    end
-    count_box = []
-    (0..@num.uniq.length - 1).each do |i|
-      count_box[i] = @num.count(@num.uniq[i])
-    end
-    if count_box.sort.reverse == [4, 1]
-      @result = 'フォー・オブ・ア・カインド'
-    elsif  count_box.sort.reverse == [3, 2]
-      @result = 'フルハウス'
-    elsif  count_box.sort.reverse == [3, 1, 1]
-      @result = 'スリー・オブ・ア・カインド'
-    elsif  count_box.sort.reverse == [2, 2, 1]
-      @result = 'ツーペア'
-    elsif  count_box.sort.reverse == [2, 1, 1, 1]
-      @result = 'ワンペア'
-    elsif count_box.sort.reverse == [1, 1, 1, 1, 1]
-      @result = if flash && straight
-                  'ストレートフラッシュ'
-                elsif flash
-                  'フラッシュ'
-                elsif straight
-                  'ストレート'
-                else
-                  'ハイカード'
-                end
-    end
+  def straight?
+    @nums.sort[1] == @nums.min + 1 && @nums.sort[2] == @nums.min + 2 && @nums.sort[3] == @nums.min + 3 && @nums.sort[4] == @nums.min + 4
   end
 
-  private
-
-  def straight
-    @num.sort[1] == @num.min + 1 && @num.sort[2] == @num.min + 2 && @num.sort[3] == @num.min + 3 && @num.sort[4] == @num.min + 4
-  end
-
-  def flash
-    @suit.count(@suit[0]) == @suit.length
+  def flash?
+    @suits.count(@suits[0]) == @suits.length
   end
 end
