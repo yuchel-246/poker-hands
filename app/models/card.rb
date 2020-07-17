@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 class Card < ApplicationRecord
-  VALID_FORMAT = /\A[A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?[ ][A-Z][\d]?[\d]?\z/.freeze
+  VALID_FORMAT = /\A.[\d]?[\d]?[ ].[\d]?[\d]?[ ].[\d]?[\d]?[ ].[\d]?[\d]?[ ].[\d]?[\d]?\z/.freeze
   VALID_FORMAT_STRICT = /\A[SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])[ ][SDHC]([1-9]|1[0-3])\z/.freeze
   validate :validate
 
   def validate
     cards = hand.split(/[ ]/)
     if hand.match(VALID_FORMAT).nil?
-      errors.add(:hand, '5つのカード指定文字を半角スペース区切りで入力してください。（例：”S1 H3 D9 C13 S11”）')
+      @errors = "5つのカード指定文字を半角スペース区切りで入力してください。（例：”S1 H3 D9 C13 S11”）"
     elsif hand.match(VALID_FORMAT_STRICT).nil?
-      errors.add(:hand, identify)
+      @errors = identify
     elsif cards.size != cards.uniq.size
-      errors.add(:hand, 'カードが重複しています。')
+      @errors= "カードが重複しています。"
     end
   end
 
@@ -54,10 +54,10 @@ class Card < ApplicationRecord
   def identify
     @cards = hand.split(' ')
     @cards.each.with_index(1) do |item, i|
-      if item.match(/[SDHC]([1-9]|1[0-3])/)
+      if item.match(/\A[SDHC]([1-9]|1[0-3])\z/)
         puts ''
       else
-        return "#{i}番目のカード指定文字が不正です。（#{item}）\n半角英字大文字のスート（S,H,D,C）と数字（1〜13）の組み合わせでカードを指定してください。"
+        return "#{i}番目のカード指定文字が不正です。（#{item}）半角英字大文字のスート（S,H,D,C）と数字（1〜13）の組み合わせでカードを指定してください。"
       end
     end
   end

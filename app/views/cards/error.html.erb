@@ -5,11 +5,11 @@
     </div>
     <div class="contents">
       <%= render 'form' %>
-      <% @card.errors.full_messages.each do |message| %>
-        <div class="form-error">
-          <%= message %>
+      <div class="hand">
+        <div class="error">
+          <%= @card.validate %>
         </div>
-      <% end %>
+      </div>
     </div>
     <div class="footer">
     </div>
