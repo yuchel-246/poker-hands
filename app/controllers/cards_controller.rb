@@ -18,11 +18,9 @@ class CardsController < ApplicationController
   end
 
   def result
-    @a = @cards
   end
 
   def error
-    
   end
 
   private
