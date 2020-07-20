@@ -1,0 +1,17 @@
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>Check a Poker Hand</h1>
+    </div>
+    <div class="contents">
+      <%= render 'form' %>
+      <div class="hand">
+        <div class="error">
+          <%= @card.validate %>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+    </div>
+  </div>
+</body>
