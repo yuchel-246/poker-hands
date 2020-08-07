@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class CardsController < ApplicationController
+
   def top
-    @card = Card.new
+    @card = JudgeHand.new
   end
 
   def judgment
-    @card = Card.new(card_params)
+    @card = JudgeHand.new(card_params)
     if @card.valid?
       # バリデーションエラーではない場合
       # → 役判定処理を実施
@@ -26,6 +27,6 @@ class CardsController < ApplicationController
   private
 
   def card_params
-    params.require(:card).permit(:hand)
+    params.require(:judge_hand).permit(:hand)
   end
 end
