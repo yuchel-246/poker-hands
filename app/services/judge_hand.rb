@@ -23,6 +23,7 @@ class JudgeHand
     @nums = hand.delete('^0-9| ').split(' ').map{|n|n.to_i}
     @suits = hand.delete('^SDHC| ').split(' ')
     @cards = hand.split(' ')
+    
     # 変換
     count_box = []
     (0..@nums.uniq.length - 1).each do |i|
