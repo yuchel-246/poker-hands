@@ -16,7 +16,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S1 S2 S3 S4 S5')
       end
       it '有効である' do
-        expect(@cards.validate?).to eq false
+        expect(@cards.valid?).to eq true
       end
     end
     context 'A-Zと1-13のカード6枚ある時' do
@@ -24,7 +24,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S1 S2 S3 S4 S5 S6')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq VALID_FORMAT_MSG
       end
     end
@@ -33,7 +33,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S1 S2 S3 S4')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq VALID_FORMAT_MSG
       end
     end
@@ -42,7 +42,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S1 S2 S3 S4 S4')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq VALID_DUPLICATION_MSG
       end
     end
@@ -51,7 +51,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'A1 S2 S3 S4 S5')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq @cards.identify
       end
     end
@@ -60,7 +60,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S14 S2 S3 S4 S5')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq @cards.identify
       end
     end
@@ -69,7 +69,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S S2 S3 S4 S5')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq @cards.identify
       end
     end
@@ -78,7 +78,7 @@ describe 'ポーカー形式・役判定テスト' do
         @cards = JudgeHand.new(card_set: 'S1/S2/S3/S4/S5')
       end
       it '無効である' do
-        expect(@cards.validate?).to eq true
+        expect(@cards.valid?).to eq false
         expect(@cards.error).to eq VALID_FORMAT_MSG
       end
     end
