@@ -2,6 +2,7 @@ require 'rails_helper'
 require './app/services/judge_hand'
 include CardJudgeModule
 
+
 describe CardsController do
 
   describe 'GET #top' do
@@ -19,8 +20,8 @@ describe CardsController do
   describe 'Post #judgment' do
     context 'cardが正しい時resultへ' do
       before do
-        hand = 'S1 S2 S3 S4 S5'
-        post :judgment, params: {card_judge_module_judge_hand: {hand: hand} }
+        card_set = 'S1 S2 S3 S4 S5'
+        post :judgment, params: {card_judge_module_judge_hand: {card_set: card_set} }
       end
       it 'リクエストは200 OKとなること' do
         expect(response.status).to eq 200
@@ -32,8 +33,8 @@ describe CardsController do
     
     context 'cardが不正の時errorへ' do
       before do
-        hand = 'S1 S2 S3 S4 S'
-        post :judgment, params: {card_judge_module_judge_hand: {hand: hand} }
+        card_set = 'S1 S2 S3 S4 S'
+        post :judgment, params: {card_judge_module_judge_hand: {card_set: card_set} }
       end
       it 'リクエストは200 OKとなること' do
         expect(response.status).to eq 200
