@@ -2,9 +2,7 @@
 
 class CardsController < ApplicationController
   require './app/services/judge_hand'
-  require './app/services/const/error_valid_format'
   include CardJudgeModule
-  include ErrorValidFormatModule
   
   def top
     @card = JudgeHand.new
@@ -12,13 +10,10 @@ class CardsController < ApplicationController
 
   def judgment
     @card = JudgeHand.new(card_params)
-    if @card.validate?
-      # バリデーションエラーの場合
+    unless @card.valid?
       render action: :error
     else
       @card.judge
-      # バリデーションエラーではない場合
-      # → 役判定処理を実施
       render action: :result
     end
   end

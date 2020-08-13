@@ -9,31 +9,31 @@ module CardJudgeModule
     include ErrorMessageModule
     include ErrorValidFormatModule
     
-    def validate?
+    def valid?
       cards = card_set.split(/[ ]/)
       if not VALID_FORMAT.match?(card_set)
         @error = VALID_FORMAT_MSG
-        return true
+        return false
       elsif not VALID_FORMAT_STRICT.match?(card_set)
         @error = identify
-        return true
+        return false
       elsif cards.size != cards.uniq.size
         @error = VALID_DUPLICATION_MSG
-        return true
-      else
         return false
+      else
+        return true
       end
     end
 
     # 役判定
     def judge
-      nums = card_set.delete('^0-9| ').split(' ').map{|n|n.to_i}
-      suits = card_set.delete('^SDHC| ').split(' ')
+      @nums = card_set.delete('^0-9| ').split(' ').map{|n|n.to_i}
+      @suits = card_set.delete('^SDHC| ').split(' ')
       cards = card_set.split(' ')
       # 変換
       count_box = []
-      (0..nums.uniq.length - 1).each do |i|
-        count_box[i] = nums.count(nums.uniq[i])
+      (0..@nums.uniq.length - 1).each do |i|
+        count_box[i] = @nums.count(@nums.uniq[i])
       end
       
       case [straight?, flash?, count_box.sort.reverse]
@@ -69,11 +69,11 @@ module CardJudgeModule
 
     private
     def straight?
-      nums.sort[1] == nums.min + 1 && nums.sort[2] == nums.min + 2 && nums.sort[3] == nums.min + 3 && nums.sort[4] == nums.min + 4
+      @nums.sort[1] == @nums.min + 1 && @nums.sort[2] == @nums.min + 2 && @nums.sort[3] == @nums.min + 3 && @nums.sort[4] == @nums.min + 4
     end
 
     def flash?
-      suits.count(suits[0]) == suits.length
+      @suits.count(@suits[0]) == @suits.length
     end
   end
 end
