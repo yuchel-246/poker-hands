@@ -5,39 +5,38 @@ module V1
     resources :cards do
       post '/' do
         card_sets = params[:cards]
-        cards = []
-        card_sets.each do |card_set|
-          cards << JudgeHand.new(card: card_set)
+        card_set = []
+        card_sets.each do |cards|
+          card_set << JudgeHand.new(card: cards)
         end
 
         scores = []
-        cards.each do |card|
-          card.judge
-          scores << card.strong
+        errors = []
+
+        card_set.each do |card|
+          unless card.valid?
+            errors << {"card": card.card, "msg": card.msg}
+          else
+            card.judge
+            scores << card.strong
+          end
         end
 
         results = []
-        errors = []
-        cards.each do |card|
-          if card.valid?
-            best_score = scores.max
-            if best_score == card.strong
-              results << {"card": card.card,"hand": card.hand, "best":"true"}
-            else
-              results << {"card": card.card,"hand": card.hand, "best":"false"}
-            end
-          else 
-            errors << {"card": card.card, "msg": card.msg}
+        best_score = scores.max
+        card_set.each do |card|
+          if card.hand == nil
+            results
+          elsif best_score == card.strong
+            results << {"card": card.card, "hand": card.hand, "best": "true"}
+          else
+            results << {"card": card.card, "hand": card.hand, "best": "false"}
           end
         end
         
-        if results.present? && errors.present?
-          response = {result: results, error: errors}
-        elsif results.present?
-          response = {result: results}
-        else 
-          response = {error: errors}
-        end
+        response = {}
+        response["result"] = results if results.present?
+        response["error"] = errors if errors.present?
         response
       end
     end

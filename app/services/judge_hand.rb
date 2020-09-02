@@ -67,7 +67,7 @@ module CardJudgeModule
       end
     end
 
-    def best_judge(card)
+    def best_judge
       scores = []
       scores << @strong
 

@@ -28,6 +28,6 @@ class CardsController < ApplicationController
   private
 
   def card_params
-    params.require(:card_judge_module_judge_hand).permit(:card, :msg)
+    params.require(:card_judge_module_judge_hand).permit(:card)
   end
 end
