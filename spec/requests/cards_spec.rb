@@ -54,10 +54,27 @@ RSpec.describe "Cards", type: :request do
       end
     end
 
+    context '4つのカードが正しい時' do
+
+      before do
+        cards = {"cards": ["H1 H13 H12 H11 H10", "H9 C9 S9 H2 C2", "C13 D12 C11 H8 H7", "C13 D12 C11 D10 H9"]}
+        post "/v1/cards", params: cards
+      end
+    
+      it '201が返ってくる' do
+        expect(response.status).to eq 201
+      end
+    
+      it '成功時のjsonレスポンスを返す' do
+        result_response = {"result" => [{"best"=>"false", "card"=>"H1 H13 H12 H11 H10", "hand"=>"フラッシュ"}, {"best"=>"true", "card"=>"H9 C9 S9 H2 C2", "hand"=>"フルハウス"}, {"best"=>"false", "card"=>"C13 D12 C11 H8 H7", "hand"=>"ハイカード"}, {"best"=>"false", "card"=>"C13 D12 C11 D10 H9", "hand"=>"ストレート"}]}
+        expect(JSON.parse(response.body)).to eq result_response
+      end
+    end
+
     context 'リクエスト形式が不正な場合' do
 
       before do
-        cards = {"hands": ["H1 H13 H12 H11 H10", "H9 C9 S9 H2 C2", "C13 D12 C11 H8 H7"]}
+        cards = {"": ["H1 H13 H12 H11 H10", "H9 C9 S9 H2 C2", "C13 D12 C11 H8 H7"]}
         post '/v1/cards', params: cards
       end
     
@@ -65,17 +82,27 @@ RSpec.describe "Cards", type: :request do
         expect(response.status).to eq 400
       end
 
+      it '400のjsonレスポンスを返す' do
+        json = {"error" => "リクエストが不正です(400)"}
+        expect(JSON.parse(response.body)).to eq json
+      end
+
     end
 
     context 'URLが不正な場合' do
 
       before do
-        cards = {"cards": ["H1 H13 H12 H11 H10", "H9 C9 S9 H2 C2", "C13 D12 C11 H8 H7"}
+        cards = {"cards": ["H1 H13 H12 H11 H10", "H9 C9 S9 H2 C2", "C13 D12 C11 H8 H7"]}
         post "/v1/card", params: cards
       end
     
       it '404が返ってくる' do
         expect(response.status).to eq 404
+      end
+
+      it '404のjsonレスポンスを返す' do
+        json = {"error"=>"not_found・URLが不正です(404)"}
+        expect(JSON.parse(response.body)).to eq json
       end
 
     end

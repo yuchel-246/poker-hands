@@ -3,6 +3,9 @@ module V1
     require_relative '../../services/judge_hand.rb'
     include CardJudgeModule
     resources :cards do
+      params do
+        requires :cards
+      end
       post '/' do
         card_sets = params[:cards]
         cards = []
