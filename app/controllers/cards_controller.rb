@@ -16,6 +16,7 @@ class CardsController < ApplicationController
       @card.judge
       render action: :result
     end
+    
   end
 
   def result
@@ -27,6 +28,6 @@ class CardsController < ApplicationController
   private
 
   def card_params
-    params.require(:card_judge_module_judge_hand).permit(:card_set, :error)
+    params.require(:card_judge_module_judge_hand).permit(:card)
   end
 end

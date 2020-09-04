@@ -20,8 +20,8 @@ describe CardsController do
   describe 'Post #judgment' do
     context 'cardが正しい時resultへ' do
       before do
-        card_set = 'S1 S2 S3 S4 S5'
-        post :judgment, params: {card_judge_module_judge_hand: {card_set: card_set} }
+        card = 'S1 S2 S3 S4 S5'
+        post :judgment, params: {card_judge_module_judge_hand: {card: card} }
       end
       it 'リクエストは200 OKとなること' do
         expect(response.status).to eq 200
@@ -33,8 +33,8 @@ describe CardsController do
     
     context 'cardが不正の時errorへ' do
       before do
-        card_set = 'S1 S2 S3 S4 S'
-        post :judgment, params: {card_judge_module_judge_hand: {card_set: card_set} }
+        card = 'S1 S2 S3 S4 S'
+        post :judgment, params: {card_judge_module_judge_hand: {card: card} }
       end
       it 'リクエストは200 OKとなること' do
         expect(response.status).to eq 200

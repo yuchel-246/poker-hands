@@ -75,4 +75,4 @@ gem 'rails-i18n', '~> 5.1'
 gem 'rubocop', require: false
 gem 'rubocop-rails', require: false
 
-
+gem 'grape'
