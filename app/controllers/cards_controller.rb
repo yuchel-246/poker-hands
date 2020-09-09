@@ -1,20 +1,22 @@
 # frozen_string_literal: true
 
 class CardsController < ApplicationController
+  require './app/services/judge_hand'
+  include CardJudgeModule
+  
   def top
-    @card = Card.new
+    @card = JudgeHand.new
   end
 
   def judgment
-    @card = Card.new(card_params)
-    if @card.valid?
-      # バリデーションエラーではない場合
-      # → 役判定処理を実施
-      render action: :result
-    else
-      # バリデーションエラーの場合
+    @card = JudgeHand.new(card_params)
+    unless @card.valid?
       render action: :error
+    else
+      @card.judge
+      render action: :result
     end
+    
   end
 
   def result
@@ -26,6 +28,6 @@ class CardsController < ApplicationController
   private
 
   def card_params
-    params.require(:card).permit(:hand)
+    params.require(:card_judge_module_judge_hand).permit(:card)
   end
 end

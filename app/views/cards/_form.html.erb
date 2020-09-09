@@ -1,4 +1,4 @@
 <%= form_for @card, html: { class: 'form'}, url: {action: "judgment"} do |f| %>
-  <%= f.text_field :hand, class: "cards" %>
+  <%= f.text_field :card, class: "cards" %>
   <%= f.submit "Check", class: "check" %>
 <% end %>
